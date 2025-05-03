@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Self-Help Screening Tools</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 1em; }
+        header, footer { text-align: center; margin-bottom: 1em; }
+        button { margin: 1em 0; }
+        form div { margin-bottom: 1em; }
+    </style>
+    <script>
+        const translations = {
+            en: {
+                siteTitle: "Self-Help Screening Tools",
+                welcomeMsg: "Welcome! Choose a test below:",
+                link_phq9: "PHQ-9 Depression Test",
+                link_home: "Home",
+                phq9Title: "PHQ-9 Depression Test",
+                submitBtn: "Submit",
+                questions: [
+                    "Little interest or pleasure in doing things?",
+                    "Feeling down, depressed, or hopeless?",
+                    "Trouble falling or staying asleep, or sleeping too much?",
+                    "Feeling tired or having little energy?",
+                    "Poor appetite or overeating?",
+                    "Feeling bad about yourself — or that you are a failure or have let yourself or your family down?",
+                    "Trouble concentrating on things, such as reading the newspaper or watching television?",
+                    "Moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless that you have been moving a lot more than usual?",
+                    "Thoughts that you would be better off dead or of hurting yourself in some way?"
+                ]
+            },
+            et: {
+                siteTitle: "Eneseabi Sõeluuringud",
+                welcomeMsg: "Tere tulemast! Vali test allpool:",
+                link_phq9: "PHQ-9 depressioonitest",
+                link_home: "Avaleht",
+                phq9Title: "PHQ-9 depressioonitest",
+                submitBtn: "Esita",
+                questions: [
+                    "Väike huvi või rõõm tegevuste vastu?",
+                    "Kurb või masendunud tunne?",
+                    "Probleemid uinumise, magamise või liiga palju magamisega?",
+                    "Väsimus või energia puudumine?",
+                    "Kehv isu või liigsöömine?",
+                    "Halb enesetunne enda pärast — tunne, et oled läbikukkunud või oled alt vedanud ennast või oma perekonda?",
+                    "Raskused keskendumisega, nt ajalehe lugemine või teleka vaatamine?",
+                    "Liikumine või rääkimine aeglaselt nii, et teised seda märkasid? Või vastupidi — nii rahutu või ärev, et liikusid rohkem kui tavaliselt?",
+                    "Mõtted, et oleks parem, kui sind poleks või soov ennast kahjustada?"
+                ]
+            }
+        };
+
+        let currentLang = 'en';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'et' : 'en';
+            document.getElementById('siteTitle').innerText = translations[currentLang].siteTitle;
+            document.getElementById('welcomeMsg').innerText = translations[currentLang].welcomeMsg;
+            document.getElementById('link_phq9').innerText = translations[currentLang].link_phq9;
+            document.getElementById('phq9Title').innerText = translations[currentLang].phq9Title;
+            document.getElementById('submitBtn').innerText = translations[currentLang].submitBtn;
+
+            const questionsDiv = document.getElementById('questions');
+            if (questionsDiv) {
+                questionsDiv.innerHTML = '';
+                translations[currentLang].questions.forEach((q, i) => {
+                    questionsDiv.innerHTML += `
+                        <div>
+                            <label>${q}</label><br>
+                            <input type="radio" name="q${i}" value="0" required> 0
+                            <input type="radio" name="q${i}" value="1"> 1
+                            <input type="radio" name="q${i}" value="2"> 2
+                            <input type="radio" name="q${i}" value="3"> 3
+                        </div>`;
+                });
+            }
+        }
+
+        function loadPHQ9() {
+            document.getElementById('mainContent').innerHTML = `
+                <h2 id="phq9Title">${translations[currentLang].phq9Title}</h2>
+                <form id="phq9Form">
+                    <div id="questions"></div>
+                    <button type="button" onclick="submitPHQ9()" id="submitBtn">${translations[currentLang].submitBtn}</button>
+                </form>`;
+            toggleLanguage();
+        }
+
+        function submitPHQ9() {
+            let total = 0;
+            for (let i = 0; i < 9; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) total += parseInt(selected.value);
+            }
+
+            let resultText = "";
+            if (total <= 4) resultText = "Minimal depression";
+            else if (total <= 9) resultText = "Mild depression";
+            else if (total <= 14) resultText = "Moderate depression";
+            else if (total <= 19) resultText = "Moderately severe depression";
+            else resultText = "Severe depression";
+
+            document.getElementById('mainContent').innerHTML = `
+                <h2>PHQ-9 Result</h2>
+                <p>Your score: ${total}</p>
+                <p>Interpretation: ${resultText}</p>
+                <a href="#" onclick="showHome()">${translations[currentLang].link_home}</a>`;
+        }
+
+        function showHome() {
+            document.getElementById('mainContent').innerHTML = `
+                <p id="welcomeMsg">${translations[currentLang].welcomeMsg}</p>
+                <nav><a href="#" onclick="loadPHQ9()" id="link_phq9">${translations[currentLang].link_phq9}</a></nav>`;
+            toggleLanguage();
+        }
+
+        window.onload = showHome;
+    </script>
+</head>
+<body>
+    <header>
+        <h1 id="siteTitle">Self-Help Screening Tools</h1>
+        <button onclick="toggleLanguage()">EN / ET</button>
+    </header>
+
+    <main id="mainContent">
+        <!-- Content loads dynamically -->
+    </main>
+
+    <footer>
+        <p>&copy; 2025 YourSiteName</p>
+    </footer>
+</body>
+</html>
